@@ -57,4 +57,4 @@ The notebook versions contain additional comments on using the integrators.
 
 2. Energy is completely conserved, since there is no loss due to non-conservative forces (air drag). Increasing the number of steps will decrease the step size. Taking a very small number of steps (4) will decrease the maximum y height. I suspect this is because when you look at fewer points, you're less likely to be clustered around the extremum. Increasing the number of steps (400) filled out the plot more and had no meaningful effect on the y observation when compared to the default (200).
 
-3.  
+3. Modified to resume air resistance. Went back to 200 steps. How I would determine terminal velocity is to set the initial velocity to very high and just run the simulation long enough to where I can take the final velocity as the terminal velocity.

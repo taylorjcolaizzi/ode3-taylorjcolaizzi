@@ -59,8 +59,8 @@ double f_ri(double x, const vector<double> &y, void *params=0){
 double f_vi(double x, const vector<double> &y, void *params=0){ 
   (void) x;
   Params *p = (Params*)params;
-  // return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[1] / p->m;
-  return 0;  // if no air, no forces/acceleration along i direction in this problem
+  return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[1] / p->m;
+  // return 0;  // if no air, no forces/acceleration along i direction in this problem
 }
 
 /// \brief Change in position along \f$\hat j\f$ axis
@@ -80,8 +80,8 @@ double f_rj(double x, const vector<double> &y, void *params=0){
 double f_vj(double x, const vector<double> &y, void *params=0){  
   (void) x;
   Params *p = (Params*)params;
-  // return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[3] / p->m - p->g;
-  return -p->g;    // if no air constant acceleration along -j direction: F/m = -g
+  return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[3] / p->m - p->g;
+  // return -p->g;    // if no air constant acceleration along -j direction: F/m = -g
 }
 
 /// \brief Stopping condition
@@ -155,8 +155,8 @@ int main(int argc, char **argv){
   
   double x=0;           // t0
   double xmax=20;  // tmax
-  // int nsteps=200;
-  int nsteps=4;
+  int nsteps=200;
+  // int nsteps=4;
   // fixed step size algorithm
   auto tgN = RK4SolveN(v_fun, y, nsteps, x, xmax, p_par, f_stop);
   // example of variable step algorithm, here the estimate accuracy is limited to 1e-4
