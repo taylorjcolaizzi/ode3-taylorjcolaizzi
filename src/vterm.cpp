@@ -155,7 +155,8 @@ int main(int argc, char **argv){
   
   double x=0;           // t0
   double xmax=20;  // tmax
-  int nsteps=200;
+  // int nsteps=200;
+  int nsteps=4;
   // fixed step size algorithm
   auto tgN = RK4SolveN(v_fun, y, nsteps, x, xmax, p_par, f_stop);
   // example of variable step algorithm, here the estimate accuracy is limited to 1e-4

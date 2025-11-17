@@ -50,3 +50,11 @@ Two examples are given for using ODE solvers from the scipy.integrate sub-packag
     Solution (projScPY.py[ipynb]) using an older interface scipy.integrate.odeint¶ (see comments here: https://docs.scipy.org/doc/scipy/reference/integrate.html).  I do not recommend using this interface any longer.
 
 The notebook versions contain additional comments on using the integrators.
+
+# Part A
+
+1. I did this and it's in the src file. It's based on RKnDemo.cpp.
+
+2. Energy is completely conserved, since there is no loss due to non-conservative forces (air drag). Increasing the number of steps will decrease the step size. Taking a very small number of steps (4) will decrease the maximum y height. I suspect this is because when you look at fewer points, you're less likely to be clustered around the extremum. Increasing the number of steps (400) filled out the plot more and had no meaningful effect on the y observation when compared to the default (200).
+
+3.  
