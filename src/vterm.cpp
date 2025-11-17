@@ -81,7 +81,7 @@ double f_vj(double x, const vector<double> &y, void *params=0){
   (void) x;
   Params *p = (Params*)params;
   // return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[3] / p->m - p->g;
-  return -g;    // if no air constant acceleration along -j direction: F/m = -g
+  return -p->g;    // if no air constant acceleration along -j direction: F/m = -g
 }
 
 /// \brief Stopping condition
