@@ -1,23 +1,26 @@
-# build the example code 
-# to build your own program, add the EXE name in the EXES list below
-# then include a target section following the example of one of the
-# other programs below
 
+ODELIB = .
+
+
+# ROOT configuration
 ROOTCFLAGS = $(shell root-config --cflags)
 ROOTLIBS   = $(shell root-config --libs)
 ROOTGLIBS  = $(shell root-config --glibs)
-ROOTFLAGS   = $(ROOTCFLAGS) $(ROOTLIBS) $(ROOTGLIBS) 
+ROOTFLAGS  = $(ROOTCFLAGS) $(ROOTLIBS) $(ROOTGLIBS)
+
+# Compiler and flags
 CXXFLAGS  += $(ROOTCFLAGS) -I$(ODELIB) -Wall -O3
 LDFLAGS    = $(ROOTLIBS) $(ROOTGLIBS) -Wl,-rpath,$(ODELIB) -L$(ODELIB) -lode
 GSLFLAGS   = -lgsl -lgslcblas
-GXX	   = g++ $(CXXFLAGS)
+GXX        = g++ $(CXXFLAGS)
 
+# List of executables
+EXES = baseball1 baseball2 RKnDemo RKnStep RKnTest projGSL vterm
 
-EXES=baseball1 baseball2 RKnDemo RKnStep RKnTest projGSL vterm
-
-
+# Default target
 all: $(EXES)
 
+# --- Targets ---
 RKnDemo: RKnDemo.cpp $(ODELIB)/RKn.hpp 
 	$(GXX) $(CXXFLAGS) -o$@ $@.cpp $(LDFLAGS)
 
@@ -28,7 +31,7 @@ RKnTest: RKnTest.cpp $(ODELIB)/RKn.hpp
 	$(GXX) $(CXXFLAGS) -o$@ $@.cpp $(LDFLAGS)
 
 baseball1: baseball1.cpp $(ODELIB)/RKn.hpp 
-	$(GXX) $(CXXFLAGS) -o$@ $@.cpp $(LDFLAGS) 
+	$(GXX) $(CXXFLAGS) -o$@ $@.cpp $(LDFLAGS)
 
 baseball2: baseball2.cpp $(ODELIB)/RKn.hpp 
 	$(GXX) $(CXXFLAGS) -o$@ $@.cpp $(LDFLAGS)
@@ -36,11 +39,16 @@ baseball2: baseball2.cpp $(ODELIB)/RKn.hpp
 projGSL: projGSL.cpp
 	$(GXX) $(CXXFLAGS) -o$@ $@.cpp $(LDFLAGS) $(GSLFLAGS)
 
-vterm: vterm.cpp
+vterm: vterm.cpp $(ODELIB)/RKn.hpp 
 	$(GXX) $(CXXFLAGS) -o$@ $@.cpp $(LDFLAGS)
 
 
+vterm: vterm.cpp RKn.hpp RKn.cpp
+	$(GXX) $(CXXFLAGS) -o$@ vterm.cpp RKn.cpp $(ROOTLIBS) $(ROOTGLIBS) -lGui -lRint
+
+
+
+# Clean
 clean:
 	rm -f *.o *.so *.d *~ $(EXES)
-
 
