@@ -125,7 +125,7 @@ int main(int argc, char **argv){
   TApplication theApp("App", &argc, argv); // init ROOT App for displays
 
 
-  double vPitch = 0;   // m/s of pitch needed to land in strike zone at 0.9 meters
+  double vPitch = 3;   // m/s of pitch needed to land in strike zone at 0.9 meters
   // write code to solve for vPitch here
   double nsteps = 200; // for solver steps
   double x = 0; // for initial time
@@ -162,7 +162,7 @@ int main(int argc, char **argv){
   cout << "Final velocity = " << sqrt(y[1]*y[1]+y[3]*y[3]) << endl;
   
   // save our graphs
-  TFile *tf=new TFile("RKnDemo.root","recreate");
+  TFile *tf=new TFile("baseball1.root","recreate");
   for (unsigned i=0; i<v_fun.size(); i++){
     tgN[i].Write();
   }
@@ -170,7 +170,7 @@ int main(int argc, char **argv){
 
   // do not change these lines
   printf("********************************\n");
-  printf("(xend,zend,z0,theta0) = (%lf,%lf,%lf,%lf)\n",xend,zend,z0,theta0);
+  printf("(xend,z0,theta0) = (%lf,%lf,%lf)\n",xend,z0,theta0);
   printf("v_pitch = %lf m/s\n",vPitch);
   printf("********************************\n");
 
