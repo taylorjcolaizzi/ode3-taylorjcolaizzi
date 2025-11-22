@@ -50,8 +50,8 @@ double f_ri(double x, const vector<double> &y, void *params=0){
 double f_vi(double x, const vector<double> &y, void *params=0){ 
   (void) x;
   Params *p = (Params*)params;
-  return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[1] / p->m;
-  // return 0;  // if no air, no forces/acceleration along i direction in this problem
+  double v = sqrt(y[1]*y[1] + y[3]*y[3]);
+  return -p->air_k * v * y[1] / p->m;
 }
 
 /// \brief Change in position along \f$\hat j\f$ axis
@@ -72,7 +72,6 @@ double f_vj(double x, const vector<double> &y, void *params=0){
   (void) x;
   Params *p = (Params*)params;
   return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[3] / p->m - p->g;
-  // return -g;    // if no air constant acceleration along -j direction: F/m = -g
 }
 
 /// \brief Stopping condition
@@ -128,7 +127,43 @@ int main(int argc, char **argv){
   double vPitch = 0;   // m/s of pitch needed to land in strike zone at 0.9 meters
   // write code to solve for vPitch here
 
+  // ******************************************************************************
+  // ** this block is useful for supporting both high and std resolution screens **
+  UInt_t dh = gClient->GetDisplayHeight()/2;   // fix plot to 1/2 screen height  
+  //UInt_t dw = gClient->GetDisplayWidth();
+  UInt_t dw = 1.1*dh;
+  // ******************************************************************************
 
+  // --- set up RK4 solver ---
+  vector<pfunc_t> v_fun(4); // ODEs for motion
+  v_fun[0] = f_ri; // x
+  v_fun[1] = f_vi; // v_x
+  v_fun[2] = f_rj; // y
+  v_fun[3] = f_vj; // v_y
+
+  vector<double> y(4); // initial conditions
+  y[0] = 0;
+  y[1] = v0 * cos(theta*M_PI/180.0);
+  y[2] = 0;
+  y[3] = v0 * sin(theta*M_PI/180.0);
+
+  cout << "Simulating projectile fall with air resistance...\n";
+
+  auto tgN = RK4SolveN(v_fun, y, nsteps, x, xmax, p_par, f_stop);
+
+  // do the plotting
+  TCanvas *c2 = new TCanvas("c2","ODE solutions 2",dw,dh);
+  tgN[2].Draw("al*");
+  c2->Draw();
+
+  cout << "Final velocity = " << sqrt(y[1]*y[1]+y[3]*y[3]) << endl;
+  
+  // save our graphs
+  TFile *tf=new TFile("RKnDemo.root","recreate");
+  for (unsigned i=0; i<v_fun.size(); i++){
+    tgN[i].Write();
+  }
+  tf->Close();
 
   // do not change these lines
   printf("********************************\n");
