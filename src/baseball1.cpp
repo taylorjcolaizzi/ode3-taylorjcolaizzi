@@ -51,7 +51,7 @@ double f_vi(double x, const vector<double> &y, void *params=0){
   (void) x;
   Params *p = (Params*)params;
   double v = sqrt(y[1]*y[1] + y[3]*y[3]);
-  return -p->air_k * v * y[1] / p->m;
+  return -p->c * v * y[1] / p->m;
 }
 
 /// \brief Change in position along \f$\hat j\f$ axis
@@ -71,7 +71,7 @@ double f_rj(double x, const vector<double> &y, void *params=0){
 double f_vj(double x, const vector<double> &y, void *params=0){  
   (void) x;
   Params *p = (Params*)params;
-  return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[3] / p->m - p->g;
+  return -p->c * sqrt(y[1]*y[1] + y[3]*y[3]) * y[3] / p->m - p->g;
 }
 
 /// \brief Stopping condition
@@ -98,6 +98,7 @@ int main(int argc, char **argv){
 
   double xend=18.5;       // meters to plate
   double z0=1.4;             // height of release [m]
+  double zend=0.9;          // must reach 0.9 m at least
   double theta0=1;         // angle of velocity at release (degrees)
                                       // convert to radians before using!
   bool showPlot=false;    // keep this flag false by default
@@ -126,6 +127,8 @@ int main(int argc, char **argv){
 
   double vPitch = 0;   // m/s of pitch needed to land in strike zone at 0.9 meters
   // write code to solve for vPitch here
+  double nsteps = 200; // for solver steps
+  double x = 0; // for initial time
 
   // ******************************************************************************
   // ** this block is useful for supporting both high and std resolution screens **
@@ -143,13 +146,13 @@ int main(int argc, char **argv){
 
   vector<double> y(4); // initial conditions
   y[0] = 0;
-  y[1] = v0 * cos(theta*M_PI/180.0);
-  y[2] = 0;
-  y[3] = v0 * sin(theta*M_PI/180.0);
+  y[1] = vPitch * cos(theta0*M_PI/180.0);
+  y[2] = z0; // I know it says z, but it's the initial height.
+  y[3] = vPitch * sin(theta0*M_PI/180.0);
 
   cout << "Simulating projectile fall with air resistance...\n";
 
-  auto tgN = RK4SolveN(v_fun, y, nsteps, x, xmax, p_par, f_stop);
+  auto tgN = RK4SolveN(v_fun, y, nsteps, x, xend, p_par, f_stop);
 
   // do the plotting
   TCanvas *c2 = new TCanvas("c2","ODE solutions 2",dw,dh);
@@ -167,7 +170,7 @@ int main(int argc, char **argv){
 
   // do not change these lines
   printf("********************************\n");
-  printf("(xend,z0,theta0) = (%lf,%lf,%lf)\n",xend,z0,theta0);
+  printf("(xend,zend,z0,theta0) = (%lf,%lf,%lf,%lf)\n",xend,zend,z0,theta0);
   printf("v_pitch = %lf m/s\n",vPitch);
   printf("********************************\n");
 
