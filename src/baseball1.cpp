@@ -168,17 +168,17 @@ int main(int argc, char **argv){
   }
   tf->Close();
 
+  cout << "Press ^c to exit" << endl;
+  theApp.SetIdleTimer(30,".q");  // set up a failsafe timer to end the program  
+  theApp.Run();
+
   // do not change these lines
   printf("********************************\n");
   printf("(xend,z0,theta0) = (%lf,%lf,%lf)\n",xend,z0,theta0);
   printf("v_pitch = %lf m/s\n",vPitch);
   printf("********************************\n");
-
-  if (showPlot){
-    cout << "Press ^c to exit" << endl;
-    theApp.SetIdleTimer(30,".q");  // set up a failsafe timer to end the program  
-    theApp.Run();
-  }
+  printf("********************************\n");
+//   printf("(x_f,z_f,v_f) = (%lf,%lf,%lf)\n",x,y,z);
   
   return 0;
 }
