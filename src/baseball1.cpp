@@ -33,6 +33,59 @@ struct Params {
   double c;
 };
 
+// Here, we need to insert the functions that describe our projectile motion.
+// Use ri, rj, rk to define directions (x, y, z).
+
+/// \brief Change in position along \f$\hat i\f$ axis
+/// \param[in] x independent variable
+/// \param[in] y dependent variables
+double f_ri(double x, const vector<double> &y, void *params=0){ 
+  (void) x;   // prevent unused variable warning
+  return y[1];
+}
+
+/// \brief Change in velocity along  \f$\hat i\f$ axis
+/// \param[in] x independent variable
+/// \param[in] y dependent variables
+double f_vi(double x, const vector<double> &y, void *params=0){ 
+  (void) x;
+  Params *p = (Params*)params;
+  return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[1] / p->m;
+  // return 0;  // if no air, no forces/acceleration along i direction in this problem
+}
+
+/// \brief Change in position along \f$\hat j\f$ axis
+/// \param[in] x independent variable
+/// \param[in] y dependent variables
+///
+/// Air resistance model: F= \f$k v^2\f$
+///
+double f_rj(double x, const vector<double> &y, void *params=0){  
+  (void) x;   // prevent unused variable warning
+  return y[3];
+}
+
+/// Change in velocity along  \f$\hat j\f$ axis
+/// \param[in] x independent variable
+/// \param[in] y dependent variables
+double f_vj(double x, const vector<double> &y, void *params=0){  
+  (void) x;
+  Params *p = (Params*)params;
+  return -p->air_k * sqrt(y[1]*y[1] + y[3]*y[3]) * y[3] / p->m - p->g;
+  // return -g;    // if no air constant acceleration along -j direction: F/m = -g
+}
+
+/// \brief Stopping condition
+/// \param[in] x independent variable
+/// \param[in] y dependent variables
+///
+/// Returns 0(1) to flag continuation(termination) of calculation 
+double f_stop(double x, const vector<double> &y, void *params=0){
+  (void) x;
+  if (y[2]<0) return 1;  // stop calulation if the current step takes height to negative value
+  return 0;  // continue calculation
+}
+
 int main(int argc, char **argv){
 
   // examples of parameters
