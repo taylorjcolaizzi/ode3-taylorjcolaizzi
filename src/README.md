@@ -1,3 +1,5 @@
+Team member names and computing IDs: Malinda Amarakoon (zjm4us) Taylor Colaizzi (zxk4gs)
+
 # Baseball Pitch Simulation
 
 ## Problem Description
@@ -54,7 +56,20 @@ v_pitch = 48.084208 m/s
 
 This indicates that the baseball must be thrown at approximately 48.08 m/s to reach the strike zone under the specified conditions.
 
+run
+./baseball1 -p
+
+Output
+********************************
+(xend,z0,theta0) = (18.500000,1.400000,1.000000)
+v_pitch = 48.084208 m/s
+********************************
+Info in <TCanvas::Print>: png file trajectory.png has been created
+Trajectory plot saved as trajectory.png
+
+
 
 Files
 baseball1.cpp – main program
 RKn.hpp / RKn.cpp – Runge-Kutta solvers
+trajectory.png
