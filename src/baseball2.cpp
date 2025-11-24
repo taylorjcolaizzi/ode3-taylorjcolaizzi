@@ -30,7 +30,21 @@ struct Params {
   double d;  // diameter
   double b;  // linear drag coefficient
   double c;  // quadratic drag coefficient
+  double phi; // orientation of spin
+  double w; // angular speed
+  double B; // magnus force part
 };
+
+// making some useful constants for later if needed
+double vPitch = 0;
+double theta0 = .1;
+
+// Fitzpatrick 3.43 says B = 4.1e-4
+// Fitzpatrick 3.41 says F(v) = 0.0039 + 0.0058/(1 +exp(v - 35)/5)
+// for this function, go ahead and input the velocity magnitude!
+double f_v(double v) {
+  return 0.0039 + 0.0058 / (1 + exp(v - 35) / 5);
+}
 
 // y={x,y,z,v_x,v_y,v_z}
 // this is position (3), velocity (3)
@@ -52,24 +66,31 @@ double fz(double t, const vector<double> &y, void *p) { return y[5]; }
 // dv_x/dt = -F(v)vv_x + Bw(v_x*sin(phi) - v_y*cos(phi))
 double fvx(double t, const vector<double> &y, void *p) {
   Params *pars = (Params*) p;
-  double vx = y[3], vz = y[5];
-  double v = sqrt(vx*vx + vz*vz);
+  double vx = y[3], vy = y[4], vz = y[5];
+  double v = sqrt(vx*vx + vy*vy + vz*vz);
   if(v < 1e-12) v = 1e-12;
   double D = pars->b*v + pars->c*v*v;
-  return -D*vx/v / pars->m;
+  return (-f_v(v)*v*vx + pars->B*pars->w*(vz*sin(pars->phi) - vy*cos(pars->phi))) / pars->m;
 }
 // Fitzpatrick 3.48
 // dv_y/dt = -F(v)vv_y + Bwv_x*cos(phi)
-double fvy(double t, const vector<double> &y, void *p) { return 0.0; }
+double fvy(double t, const vector<double> &y, void *p) { 
+  Params *pars = (Params*) p;
+  double vx = y[3];
+  double vy = y[4];
+  double vz = y[5];
+  double v = sqrt(vx*vx + vy*vy + vz*vz);
+  return (-f_v(v)*v*vy + pars->B*pars->w*cos(pars->phi)) / pars->m; 
+}
 // Fitzpatrick 3.49
 // dv_z/dt = -g -F(v)vv_z - Bwv_x*sin(phi)
 double fvz(double t, const vector<double> &y, void *p) {
   Params *pars = (Params*) p;
-  double vx = y[3], vz = y[5];
-  double v = sqrt(vx*vx + vz*vz);
+  double vx = y[3], vy = y[4], vz = y[5];
+  double v = sqrt(vx*vx + vy*vy + vz*vz);
   if(v < 1e-12) v = 1e-12;
   double D = pars->b*v + pars->c*v*v;
-  return -D*vz/v / pars->m - pars->g;
+  return (-f_v(v)*v*vz - pars->B*pars->w*vx*sin(pars->phi)) / pars->m - pars->g;
 }
 
 int main(int argc, char **argv){
