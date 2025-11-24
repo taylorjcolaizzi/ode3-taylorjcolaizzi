@@ -32,12 +32,24 @@ struct Params {
   double c;  // quadratic drag coefficient
 };
 
+// y={x,y,z,v_x,v_y,v_z}
+// this is position (3), velocity (3)
+
 // position functions
+// Fitzpatrick 3.44
+// dx/dt = v_x
 double fx(double t, const vector<double> &y, void *p) { return y[3]; }
-double fy(double t, const vector<double> &y, void *p) { return 0.0; }
+// Fitzpatrick 3.45
+// dy/dt = v_y
+double fy(double t, const vector<double> &y, void *p) { return y[4]; }
+// Fitzpatrick 3.46
+// dz/dt = v_z
 double fz(double t, const vector<double> &y, void *p) { return y[5]; }
 
 // velocity functions
+// Fitzpatrick 3.47
+// (w stands for omega). w = w(0,sin(phi),cos(phi))
+// dv_x/dt = -F(v)vv_x + Bw(v_x*sin(phi) - v_y*cos(phi))
 double fvx(double t, const vector<double> &y, void *p) {
   Params *pars = (Params*) p;
   double vx = y[3], vz = y[5];
@@ -46,9 +58,11 @@ double fvx(double t, const vector<double> &y, void *p) {
   double D = pars->b*v + pars->c*v*v;
   return -D*vx/v / pars->m;
 }
-
+// Fitzpatrick 3.48
+// dv_y/dt = -F(v)vv_y + Bwv_x*cos(phi)
 double fvy(double t, const vector<double> &y, void *p) { return 0.0; }
-
+// Fitzpatrick 3.49
+// dv_z/dt = -g -F(v)vv_z - Bwv_x*sin(phi)
 double fvz(double t, const vector<double> &y, void *p) {
   Params *pars = (Params*) p;
   double vx = y[3], vz = y[5];
@@ -60,12 +74,22 @@ double fvz(double t, const vector<double> &y, void *p) {
 
 int main(int argc, char **argv){
 
+  // IGNORE THESE COMMENTS BELOW SINCE THEY'RE OUT OF DATE BASED ON HOW MALINDA
+  // WROTE THE y VECTOR
   // we have 6 initial conditions for this problem
   // y[0] = y[2] = y[4] = 0;  // init x,y,z
   // y[1] = v0*cos(theta0);   // vx  "x is line towards the plate
   // y[3] = 0;                // vy  "y" is measured as left/right divergence from line to plate
   // y[5] = v0*sin(theta0);   // vz  "z" is vertival measure
   vector<double> y0(6);
+
+  // boundary conditions at t = 0
+  y0[0] = 0; // Fitzpatrick 3.50
+  y0[1] = 0; // Fitzpatrick 3.51
+  y0[2] = 0; // Fitzpatrick 3.52
+  y0[3] = vPitch * cos(theta0); // Fitzpatrick 3.53
+  y0[4] = 0; // Fitzpatrick 3.54
+  y0[5] = vPitch * sin(theta0); // Fitzpatrick 3.55
 
   bool showPlot=false;
   // pitches
