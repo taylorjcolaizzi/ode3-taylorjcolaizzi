@@ -69,7 +69,7 @@ int main(int argc, char **argv){
 
   TApplication theApp("App", &argc, argv); // init ROOT App for displays
 
-  double xend=60;   // feet
+  double xend=60.5;   // feet
   double yend=0;    // tbd
   double zend=0;    // tbd
   double vxend=0;
