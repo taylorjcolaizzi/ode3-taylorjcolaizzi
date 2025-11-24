@@ -60,8 +60,8 @@ int main(int argc, char **argv) {
     pars.g = 9.81;
     pars.m = 0.145;
     pars.d = 0.075;
-    pars.b = 1.6e-4 * pars.d;
-    pars.c = 0.25 * pars.d * pars.d;
+    pars.b = 1.6e-4 * pars.d; // needed to multiply by d
+    pars.c = 0.25 * pars.d * pars.d; // needed to multiply by d^2
 
     void *p_par = (void*)&pars;
 

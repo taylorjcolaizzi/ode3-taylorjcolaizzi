@@ -18,6 +18,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 
 using namespace std;
 
@@ -36,8 +37,8 @@ struct Params {
 };
 
 // making some useful constants for later if needed
-double vPitch = 0;
-double theta0 = .1;
+double vPitch = 48.084208; // take result from part_b_1, was 48 m/s.
+double theta0 = 1 * M_PI / 180; // 1 degree is 1/180 * pi
 
 // Fitzpatrick 3.43 says B = 4.1e-4
 // Fitzpatrick 3.41 says F(v) = 0.0039 + 0.0058/(1 +exp(v - 35)/5)
@@ -70,7 +71,7 @@ double fvx(double t, const vector<double> &y, void *p) {
   double v = sqrt(vx*vx + vy*vy + vz*vz);
   if(v < 1e-12) v = 1e-12;
   double D = pars->b*v + pars->c*v*v;
-  return (-f_v(v)*v*vx + pars->B*pars->w*(vz*sin(pars->phi) - vy*cos(pars->phi))) / pars->m;
+  return -f_v(v)*v*vx / pars->m + pars->B*pars->w*(vz*sin(pars->phi) - vy*cos(pars->phi));
 }
 // Fitzpatrick 3.48
 // dv_y/dt = -F(v)vv_y + Bwv_x*cos(phi)
@@ -80,7 +81,7 @@ double fvy(double t, const vector<double> &y, void *p) {
   double vy = y[4];
   double vz = y[5];
   double v = sqrt(vx*vx + vy*vy + vz*vz);
-  return (-f_v(v)*v*vy + pars->B*pars->w*cos(pars->phi)) / pars->m; 
+  return -f_v(v)*v*vy / pars->m + pars->B*pars->w*cos(pars->phi); 
 }
 // Fitzpatrick 3.49
 // dv_z/dt = -g -F(v)vv_z - Bwv_x*sin(phi)
@@ -90,7 +91,7 @@ double fvz(double t, const vector<double> &y, void *p) {
   double v = sqrt(vx*vx + vy*vy + vz*vz);
   if(v < 1e-12) v = 1e-12;
   double D = pars->b*v + pars->c*v*v;
-  return (-f_v(v)*v*vz - pars->B*pars->w*vx*sin(pars->phi)) / pars->m - pars->g;
+  return (-f_v(v)*v*vz / pars->m - pars->B*pars->w*vx*sin(pars->phi)) - pars->g;
 }
 
 int main(int argc, char **argv){
@@ -111,6 +112,17 @@ int main(int argc, char **argv){
   y0[3] = vPitch * cos(theta0); // Fitzpatrick 3.53
   y0[4] = 0; // Fitzpatrick 3.54
   y0[5] = vPitch * sin(theta0); // Fitzpatrick 3.55
+
+  // problem parameters
+  Params pars;
+  pars.g = 9.81;
+  pars.m = 0.145;
+  pars.d = 0.075;
+  pars.b = 1; // placeholder
+  pars.c = 1; // placeholder
+  pars.phi = 0; //placeholder
+  pars.w = 1500 * 2 * M_PI / 60; // 1500 rmp = 1500 * 2pi/60 rad/s
+  pars.B = 4.1e-4; // Fitzpatrick 3.43
 
   bool showPlot=false;
   // pitches
