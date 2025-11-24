@@ -21,6 +21,42 @@
 
 using namespace std;
 
+// COPY-PASTED CODE FROM baseball1.cpp original branch part_1_b_malinda from which this branch was created.
+
+// parameters
+struct Params {
+  double g;  // gravity
+  double m;  // mass
+  double d;  // diameter
+  double b;  // linear drag coefficient
+  double c;  // quadratic drag coefficient
+};
+
+// position functions
+double fx(double t, const vector<double> &y, void *p) { return y[3]; }
+double fy(double t, const vector<double> &y, void *p) { return 0.0; }
+double fz(double t, const vector<double> &y, void *p) { return y[5]; }
+
+// velocity functions
+double fvx(double t, const vector<double> &y, void *p) {
+  Params *pars = (Params*) p;
+  double vx = y[3], vz = y[5];
+  double v = sqrt(vx*vx + vz*vz);
+  if(v < 1e-12) v = 1e-12;
+  double D = pars->b*v + pars->c*v*v;
+  return -D*vx/v / pars->m;
+}
+
+double fvy(double t, const vector<double> &y, void *p) { return 0.0; }
+
+double fvz(double t, const vector<double> &y, void *p) {
+  Params *pars = (Params*) p;
+  double vx = y[3], vz = y[5];
+  double v = sqrt(vx*vx + vz*vz);
+  if(v < 1e-12) v = 1e-12;
+  double D = pars->b*v + pars->c*v*v;
+  return -D*vz/v / pars->m - pars->g;
+}
 
 int main(int argc, char **argv){
 
